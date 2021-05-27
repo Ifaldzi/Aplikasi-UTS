@@ -73,11 +73,17 @@ public abstract class SampleDatabase extends RoomDatabase {
     }
 
     private void populateInitialData() {
-        SampleContentProvider contentProvider = new SampleContentProvider();
-        for (String cheeseName : Cheese.CHEESES) {
-            ContentValues value = new ContentValues();
-            value.put(Cheese.COLUMN_NAME, cheeseName);
-            contentProvider.insert(SampleContentProvider.URI_CHEESE, value);
+        if(cheese().count() == 0) {
+            runInTransaction(new Runnable() {
+                @Override
+                public void run() {
+                    Cheese cheese = new Cheese();
+                    for (String cheeseName : Cheese.CHEESES) {
+                        cheese.name = cheeseName;
+                        cheese().insert(cheese);
+                    }
+                }
+            });
         }
     }
 }
